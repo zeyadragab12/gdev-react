@@ -105,6 +105,7 @@ export default function ProjectMap({ zoomed, focus, look = HOME_LOOK, onSelectDe
   lookRef.current = look;
 
   useEffect(() => {
+    if (!box.current) return; // no token: the container is not rendered, so there is nothing to mount on
     const map = new mapboxgl.Map({
       container: box.current,
       style: look?.base || STYLE,
