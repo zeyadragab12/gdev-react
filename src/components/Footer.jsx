@@ -4,9 +4,12 @@ import SocialLinks from './SocialLinks.jsx';
 import { FOUNDED_YEAR } from '../data/company.js';
 
 const COMPANY = [
-  { label: 'About Us', to: '/#about' },
+  { label: 'About Us', to: '/about-us' },
+  { label: 'Our Story', to: '/about-us/history' },
+  { label: 'Vision & Values', to: '/about-us/vision-mission' },
+  { label: 'G Group', to: '/g-group' },
+  { label: 'Latest Launches', to: '/community/latest-launches' },
   { label: 'Our Approach', to: '/#approach' },
-  { label: 'Our Vision', to: '/vision' },
   { label: 'Contact', to: '/contact' },
 ];
 
@@ -90,7 +93,7 @@ export default function Footer() {
           <div className="col-span-2 lg:col-span-1">
             <ColumnTitle>Get in Touch</ColumnTitle>
             <div className="text-[11px] tracking-[0.2em] uppercase text-muted mb-2">Hotline</div>
-            <a href="tel:16738" className="block text-[44px] md:text-[56px] font-extralight text-champagne leading-none hover:opacity-80 transition-opacity">
+            <a href="tel:16738" className="block text-[30px] md:text-[36px] font-extralight text-champagne leading-none hover:opacity-80 transition-opacity">
               16738
             </a>
             <div className="text-[11px] tracking-[0.2em] uppercase text-muted mt-8 mb-2">Email</div>
@@ -108,7 +111,7 @@ export default function Footer() {
 
       {/* oversized wordmark */}
       <div className="relative px-5 md:px-16 select-none" aria-hidden="true">
-        <div className="whitespace-nowrap text-center font-extralight uppercase leading-[0.85] tracking-[0.02em] text-[8.6vw] bg-gradient-to-b from-champagne/25 to-champagne/0 bg-clip-text text-transparent">
+        <div className="whitespace-nowrap text-center font-bold uppercase leading-[0.85] tracking-[0.02em] text-[8.6vw] text-champagne">
           G Developments
         </div>
       </div>

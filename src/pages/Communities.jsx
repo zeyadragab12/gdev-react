@@ -60,10 +60,10 @@ export default function Communities() {
           <span className="text-xs font-semibold tracking-[0.28em] uppercase text-muted">Our Communities</span>
         </div>
         <h1 className="hero-rise [animation-delay:150ms] text-[36px] md:text-[72px] font-extralight uppercase tracking-[0.02em] leading-[1.05] max-w-[1000px]">
-          Every address begins with a place <span className="text-champagne/55">worth belonging to.</span>
+          Find the community <span className="text-champagne/55">that fits your plans</span>
         </h1>
         <p className="hero-rise [animation-delay:300ms] mt-8 text-[15px] md:text-[17px] text-muted font-light max-w-[520px] leading-[1.8]">
-          {PROJECTS.length} communities across {DESTINATIONS.length} destinations — from the Mediterranean to the Red Sea and the heart of Cairo.
+          Explore our communities and find the project that best matches your preferred location, property type and lifestyle needs. Each project page brings together key information to help you take the next step with confidence.
         </p>
       </section>
 

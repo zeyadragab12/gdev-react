@@ -92,7 +92,7 @@ function EnquiryForm() {
           Your enquiry has been received. A member of our team will be in touch within one business day.
         </p>
         <Link
-          to="/communities"
+          to="/community"
           className="mt-12 self-start inline-flex items-center gap-3 text-xs font-semibold tracking-[0.14em] uppercase border-b border-glass-strong pb-2.5 hover:text-champagne transition-colors"
         >
           Explore Our Communities &rarr;
@@ -219,7 +219,7 @@ function Destinations() {
           return (
             <Link
               key={d.id}
-              to="/communities"
+              to="/community"
               className="reveal group relative h-[300px] md:h-[380px] overflow-hidden"
               style={{ transitionDelay: `${200 + i * 100}ms` }}
             >

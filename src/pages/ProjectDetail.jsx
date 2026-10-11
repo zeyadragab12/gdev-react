@@ -1,10 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import Nav from '../components/Nav.jsx';
 import Footer from '../components/Footer.jsx';
 import ContactCta from '../components/ContactCta.jsx';
 import AmenityIcon from '../components/AmenityIcon.jsx';
 import useReveal from '../hooks/useReveal.js';
+import MasterPlanSection from '../components/masterplan/MasterPlanSection.jsx';
+import useAnimatedViewBox from '../components/masterplan/useAnimatedViewBox.js';
 import { DESTINATIONS, PROJECTS, getProject, projectPath } from '../data/projects.js';
 
 const SECTIONS = [
@@ -47,7 +49,7 @@ function Hero({ project, region }) {
 
       <div className="relative h-full flex flex-col justify-end px-5 md:px-16 pb-8 md:pb-12">
         <nav className="hero-rise absolute top-28 md:top-36 left-5 md:left-16 flex items-center gap-3 text-[11px] tracking-[0.24em] uppercase text-white/60">
-          <Link to="/communities" className="hover:text-champagne transition-colors">Communities</Link>
+          <Link to="/community" className="hover:text-champagne transition-colors">Communities</Link>
           <span className="w-4 h-px bg-white/40" />
           <span className="text-champagne">{project.name}</span>
         </nav>
@@ -147,6 +149,35 @@ function Overview({ project }) {
               {para}
             </p>
           ))}
+          {project.facts && (
+            <dl className="reveal [transition-delay:300ms] mt-12 grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-6 max-w-[620px]">
+              {project.facts.map((f) => (
+                <div key={f.label} className="border-t border-glass pt-4">
+                  <dt className="text-[11px] tracking-[0.24em] uppercase text-muted mb-2">{f.label}</dt>
+                  <dd className="text-[15px] font-light leading-[1.6] text-white/85">{f.value}</dd>
+                </div>
+              ))}
+            </dl>
+          )}
+          {project.nearby && (
+            <div className="reveal [transition-delay:340ms] mt-10 max-w-[620px]">
+              <div className="text-[11px] tracking-[0.24em] uppercase text-muted mb-4">Nearby</div>
+              <ul className="flex flex-col">
+                {project.nearby.map((n) => (
+                  <li key={n.place} className="flex justify-between gap-6 py-3 border-t border-glass text-[15px] font-light text-white/80">
+                    <span>{n.place}</span>
+                    <span className="text-champagne tabular-nums">{n.time}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          <Link
+            to={`${projectPath(project.key)}/units`}
+            className="reveal [transition-delay:360ms] mt-12 mr-8 inline-flex items-center gap-3 text-xs font-semibold tracking-[0.14em] uppercase border-b border-glass-strong pb-2.5 hover:text-champagne transition-colors"
+          >
+            Unit Types &amp; Prices <span aria-hidden="true">&rarr;</span>
+          </Link>
           <Link
             to="/contact"
             className="reveal [transition-delay:360ms] mt-12 inline-flex items-center gap-3 text-xs font-semibold tracking-[0.14em] uppercase border-b border-glass-strong pb-2.5 hover:text-champagne transition-colors"
@@ -343,22 +374,100 @@ const PLAN_SHAPES = [
   (on) => <rect x={385} y={440} width={50} height={30} rx={3} className={on} />,
 ];
 
+const FULL_VIEW = [0, 0, 800, 500];
+
+function PhaseTabs({ phases, phaseId, onSelect, allowAll = true }) {
+  const tabs = allowAll ? [{ id: null, label: 'All Phases' }, ...phases] : phases;
+  return (
+    <div className="reveal [transition-delay:160ms] flex flex-wrap gap-2 mb-8" role="tablist" aria-label="Select a phase">
+      {tabs.map((t) => (
+        <button
+          key={t.label}
+          type="button"
+          role="tab"
+          aria-selected={phaseId === t.id}
+          onClick={() => onSelect(t.id)}
+          className={`px-4 py-2.5 text-[11px] font-semibold tracking-[0.18em] uppercase border transition-colors duration-300 ${
+            phaseId === t.id ? 'border-champagne bg-champagne text-black' : 'border-glass-strong text-white/70 hover:text-champagne hover:border-champagne/60'
+          }`}
+        >
+          {t.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function PhaseDetails({ phase, note }) {
+  return (
+    <div key={phase.id} className="hero-rise mb-8">
+      <div className="text-[11px] font-semibold tracking-[0.28em] uppercase text-champagne/80 mb-3">{phase.status}</div>
+      <h3 className="text-xl md:text-2xl font-light tracking-wide mb-3">{phase.title}</h3>
+      <p className="text-sm md:text-[15px] font-light leading-relaxed text-white/65 mb-5">{phase.body}</p>
+
+      <div className="text-[11px] font-semibold tracking-[0.24em] uppercase text-muted mb-3">Contains</div>
+      <ul className="flex flex-wrap gap-x-6 gap-y-2">
+        {phase.highlights.map((h) => (
+          <li key={h} className="flex items-center gap-2 text-xs tracking-[0.1em] uppercase text-white/60">
+            <span className="w-1.5 h-1.5 rounded-full bg-champagne/70" />
+            {h}
+          </li>
+        ))}
+      </ul>
+
+      {phase.units?.length > 0 && (
+        <div className="mt-7">
+          <div className="text-[11px] font-semibold tracking-[0.24em] uppercase text-muted mb-3">Unit types &amp; areas</div>
+          <ul className="border-t border-glass">
+            {phase.units.map((u) => (
+              <li key={u.name} className="flex items-baseline justify-between gap-6 py-3 border-b border-glass">
+                <span className="text-sm font-light tracking-wide text-white/85">{u.name}</span>
+                <span className="text-xs text-white/55 tabular-nums text-right">{[u.beds, u.area].filter(Boolean).join(' · ')}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {note && <p className="mt-5 text-[11px] leading-relaxed text-white/40">{note}</p>}
+    </div>
+  );
+}
+
 function MasterPlan({ project }) {
+  const [phaseId, setPhaseId] = useState(null);
   const [hover, setHover] = useState(null);
   const ref = useReveal();
   const coastal = project.destination !== 'cairo';
 
+  const phase = project.phases.find((p) => p.id === phaseId) ?? null;
+  const viewBox = useAnimatedViewBox(phase ? phase.view : FULL_VIEW);
+  const zoneIdx = phase ? phase.shapes : project.zones.map((_, i) => i);
+
+  const choose = (id) => {
+    setPhaseId(id);
+    setHover(null);
+  };
+
+  const shapeClass = (i) => {
+    const inPhase = !phase || phase.shapes.includes(i);
+    if (hover === i) return 'fill-champagne/70 stroke-champagne';
+    if (hover !== null) return inPhase ? 'fill-white/[0.07] stroke-white/30' : 'fill-white/[0.02] stroke-white/10';
+    if (!phase) return 'fill-white/[0.07] stroke-white/30';
+    return inPhase ? 'fill-champagne/35 stroke-champagne' : 'fill-white/[0.02] stroke-white/10';
+  };
+
   return (
     <section id="masterplan" ref={ref} className="scroll-mt-24 px-5 md:px-16 py-20 md:py-[160px]">
       <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-12 lg:gap-20 items-center">
-        <div className="reveal-img relative rounded-[2px] border border-glass bg-[#060606] p-4 md:p-8">
-          <svg viewBox="0 0 800 500" className="w-full h-auto" role="img" aria-label={`Illustrative master plan of ${project.name}`}>
+        <div className="reveal-img relative rounded-[2px] border border-glass bg-[#060606] p-4 md:p-8 overflow-hidden">
+          <svg viewBox={viewBox} className="w-full h-auto" role="img" aria-label={`Illustrative master plan of ${project.name}`}>
             <defs>
               <pattern id="plan-grid" width="25" height="25" patternUnits="userSpaceOnUse">
                 <path d="M25 0H0V25" fill="none" stroke="rgba(255,255,255,0.04)" />
               </pattern>
             </defs>
-            <rect width="800" height="500" fill="url(#plan-grid)" />
+            <rect x="-400" y="-300" width="1600" height="1100" fill="url(#plan-grid)" />
             {coastal ? (
               <>
                 <path d="M0 0H800V70C700 92 600 60 500 78S300 98 200 74 60 86 0 72Z" fill="rgba(245,244,240,0.06)" />
@@ -375,12 +484,13 @@ function MasterPlan({ project }) {
               <path d="M410 470V170H60M410 170H740M350 170V450" />
             </g>
             {PLAN_SHAPES.map((shape, i) => (
-              <g key={i} onMouseEnter={() => setHover(i)} onMouseLeave={() => setHover(null)} className="cursor-pointer">
-                {shape(
-                  `transition-all duration-500 ${
-                    hover === i ? 'fill-champagne/70 stroke-champagne' : hover === null ? 'fill-white/[0.07] stroke-white/30' : 'fill-white/[0.03] stroke-white/10'
-                  }`,
-                )}
+              <g
+                key={i}
+                onMouseEnter={() => setHover(i)}
+                onMouseLeave={() => setHover(null)}
+                className="cursor-pointer [&_*]:[vector-effect:non-scaling-stroke]"
+              >
+                {shape(`transition-all duration-500 ${shapeClass(i)}`)}
               </g>
             ))}
             {/* compass */}
@@ -397,12 +507,17 @@ function MasterPlan({ project }) {
 
         <div>
           <Eyebrow className="reveal">Master Plan</Eyebrow>
-          <h2 className="reveal [transition-delay:120ms] text-[30px] md:text-[48px] font-extralight uppercase tracking-[0.04em] leading-[1.1] mb-10">
+          <h2 className="reveal [transition-delay:120ms] text-[30px] md:text-[48px] font-extralight uppercase tracking-[0.04em] leading-[1.1] mb-8">
             Planned around <span className="text-champagne/55">{coastal ? 'the water' : 'the landscape'}</span>
           </h2>
+
+          <PhaseTabs phases={project.phases} phaseId={phaseId} onSelect={choose} />
+
+          {phase && <PhaseDetails phase={phase} />}
+
           <ol className="reveal [transition-delay:200ms] border-t border-glass">
-            {project.zones.map((zone, i) => (
-              <li key={zone}>
+            {zoneIdx.map((i) => (
+              <li key={project.zones[i]}>
                 <button
                   type="button"
                   onMouseEnter={() => setHover(i)}
@@ -416,7 +531,7 @@ function MasterPlan({ project }) {
                   <span className={`w-8 h-8 flex-none rounded-full border flex items-center justify-center text-[11px] tabular-nums transition-colors duration-300 ${hover === i ? 'border-champagne bg-champagne text-black' : 'border-glass-strong text-white/60'}`}>
                     {pad(i + 1)}
                   </span>
-                  <span className="text-sm md:text-[15px] font-light uppercase tracking-[0.12em]">{zone}</span>
+                  <span className="text-sm md:text-[15px] font-light uppercase tracking-[0.12em]">{project.zones[i]}</span>
                 </button>
               </li>
             ))}
@@ -570,7 +685,7 @@ export default function ProjectDetail() {
     if (project) document.title = `${project.name} — G Developments`;
   }, [project]);
 
-  if (!project) return <Navigate to="/communities" replace />;
+  if (!project) return <Navigate to="/community" replace />;
 
   const region = DESTINATIONS.find((d) => d.id === project.destination)?.region ?? project.location;
 
@@ -584,7 +699,7 @@ export default function ProjectDetail() {
       <Lifestyle project={project} />
       <Amenities project={project} />
       <Residences project={project} />
-      <MasterPlan project={project} />
+      {project.plan ? <MasterPlanSection plan={project.plan} /> : <MasterPlan project={project} />}
       <Gallery project={project} />
       <ContactCta title={`Interested in ${project.name}? Let’s arrange a private consultation.`} image={project.image} />
       <NextProject project={project} />
@@ -592,3 +707,4 @@ export default function ProjectDetail() {
     </div>
   );
 }
+

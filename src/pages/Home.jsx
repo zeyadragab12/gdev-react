@@ -1,10 +1,14 @@
-import { useEffect, useRef, useState } from 'react';
+import { Suspense, lazy, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Nav from '../components/Nav.jsx';
 import Footer from '../components/Footer.jsx';
 import ContactCta from '../components/ContactCta.jsx';
 import useReveal from '../hooks/useReveal.js';
 import { DESTINATIONS, PROJECTS, projectPath } from '../data/projects.js';
+import { PROJECT_GEO } from '../data/projectGeo.js';
+
+// Mapbox is heavy: load it only when the map section is rendered
+const ProjectMap = lazy(() => import('../components/map/ProjectMap.jsx'));
 import { FOUNDED_YEAR, YEARS_ACTIVE } from '../data/company.js';
 
 // Pins the section while vertical scroll drives the card track sideways.
@@ -48,199 +52,7 @@ function useScrollTrack() {
   return { sectionRef, trackRef, height, progress };
 }
 
-// ---- Egypt map (simplified outline, real lon/lat projected to SVG space) ----
-const MAP_SCALE = 58;
-const LAT_CORRECTION = Math.cos((27 * Math.PI) / 180);
-const project = ([lon, lat]) => [
-  +((lon - 24.3) * LAT_CORRECTION * MAP_SCALE).toFixed(1),
-  +((32.1 - lat) * MAP_SCALE).toFixed(1),
-];
-const toPath = (points, close) => 'M' + points.map((pt) => project(pt).join(' ')).join(' L') + (close ? ' Z' : '');
-
-const EGYPT_OUTLINE = toPath([
-  [25.15, 31.57], [27.24, 31.35], [27.9, 31.12], [28.95, 30.83], [29.9, 31.2], [30.4, 31.45], [31.0, 31.6],
-  [31.8, 31.52], [32.3, 31.27], [33.2, 31.08], [33.8, 31.13], [34.22, 31.32], [34.9, 29.49], [34.66, 28.97],
-  [34.52, 28.5], [34.33, 27.9], [34.25, 27.73], [33.6, 28.24], [33.1, 29.05], [32.55, 29.97], [32.35, 29.6],
-  [32.65, 29.1], [33.1, 28.35], [33.8, 27.25], [33.95, 26.75], [34.28, 26.1], [34.9, 25.07], [35.48, 23.95],
-  [35.8, 23.9], [35.6, 23.2], [36.6, 22.2], [36.9, 22.0], [25.0, 22.0], [25.0, 29.5], [24.7, 30.2], [24.9, 31.0],
-], true);
-const NILE = toPath([
-  [31.4, 22.0], [31.9, 22.6], [32.5, 23.3], [32.9, 24.09], [32.9, 24.9], [32.64, 25.69], [32.72, 26.16],
-  [32.2, 26.3], [31.18, 27.18], [30.75, 28.1], [31.1, 29.1], [31.24, 30.04], [31.1, 30.4],
-]);
-const NILE_ROSETTA = toPath([[31.1, 30.4], [30.8, 30.9], [30.4, 31.45]]);
-const NILE_DAMIETTA = toPath([[31.1, 30.4], [31.4, 31.0], [31.8, 31.52]]);
-
-const LABEL_POSITION = {
-  top: { dx: 0, dy: -18, anchor: 'middle' },
-  bottom: { dx: 0, dy: 26, anchor: 'middle' },
-  left: { dx: -16, dy: 4, anchor: 'end' },
-  right: { dx: 16, dy: 4, anchor: 'start' },
-};
-
-const unproject = (x, y) => [x / (LAT_CORRECTION * MAP_SCALE) + 24.3, 32.1 - y / MAP_SCALE];
-
-// Sniper-scope cursor: a reticle with full-width crosshairs that follows the
-// mouse and locks onto a destination pin while it is hovered.
-function MapScope({ children, locked }) {
-  const areaRef = useRef(null);
-  const reticleRef = useRef(null);
-  const hLineRef = useRef(null);
-  const vLineRef = useRef(null);
-  const readoutRef = useRef(null);
-  const [visible, setVisible] = useState(false);
-
-  const place = (x, y, svgX, svgY) => {
-    reticleRef.current.style.transform = `translate3d(${x}px,${y}px,0)`;
-    hLineRef.current.style.transform = `translate3d(0,${y}px,0)`;
-    vLineRef.current.style.transform = `translate3d(${x}px,0,0)`;
-    const [lon, lat] = unproject(svgX, svgY);
-    readoutRef.current.textContent = `${lat.toFixed(2)}°N  ${lon.toFixed(2)}°E`;
-  };
-
-  // area-relative px <-> svg viewBox units
-  const svgMetrics = () => {
-    const area = areaRef.current.getBoundingClientRect();
-    const svg = areaRef.current.querySelector('svg').getBoundingClientRect();
-    return { area, svg, k: svg.width / 660 };
-  };
-
-  const onPointerMove = (e) => {
-    if (e.pointerType !== 'mouse') return;
-    if (!visible) setVisible(true);
-    if (locked) return;
-    const { area, svg, k } = svgMetrics();
-    place(e.clientX - area.left, e.clientY - area.top, (e.clientX - svg.left) / k, (e.clientY - svg.top) / k);
-  };
-
-  useEffect(() => {
-    if (!locked || !visible) return;
-    const dest = DESTINATIONS.find((d) => d.id === locked);
-    const [sx, sy] = project(dest.coords);
-    const { area, svg, k } = svgMetrics();
-    place(svg.left - area.left + sx * k, svg.top - area.top + sy * k, sx, sy);
-  }, [locked, visible]);
-
-  return (
-    <div
-      ref={areaRef}
-      onPointerMove={onPointerMove}
-      onPointerLeave={() => setVisible(false)}
-      className="scope-area relative overflow-hidden rounded-[2px] border border-glass bg-[#050505] p-4 md:p-8"
-    >
-      {children}
-
-      <div className={`pointer-events-none absolute inset-0 transition-opacity duration-300 ${visible ? 'opacity-100' : 'opacity-0'}`} aria-hidden="true">
-        <div ref={hLineRef} className={`absolute left-0 right-0 top-0 h-px bg-champagne/15 ${locked ? 'transition-transform duration-200 ease-out' : ''}`} />
-        <div ref={vLineRef} className={`absolute top-0 bottom-0 left-0 w-px bg-champagne/15 ${locked ? 'transition-transform duration-200 ease-out' : ''}`} />
-
-        <div ref={reticleRef} className={`absolute left-0 top-0 ${locked ? 'transition-transform duration-200 ease-out' : ''}`}>
-          <svg
-            width="84"
-            height="84"
-            viewBox="-42 -42 84 84"
-            className={`absolute -left-[42px] -top-[42px] transition-transform duration-300 ${locked ? 'scale-75 text-champagne' : 'scale-100 text-champagne/80'}`}
-            fill="none"
-            stroke="currentColor"
-          >
-            <circle r="30" strokeWidth="1" className={locked ? '' : 'opacity-70'} />
-            <circle r="37" strokeWidth="1" strokeDasharray="2 6" style={{ transformBox: 'fill-box' }} className={`origin-center ${locked ? 'animate-[spin_4s_linear_infinite]' : 'hidden'}`} />
-            <path d="M-42 0H-12M12 0H42M0 -42V-12M0 12V42" strokeWidth="1" />
-            <path d="M-30 -5V5M30 -5V5M-5 -30H5M-5 30H5" strokeWidth="1" className="opacity-60" />
-            <circle r="1.6" fill="currentColor" stroke="none" />
-            {locked && <path d="M-22 -14V-22H-14M14 -22H22V-14M22 14V22H14M-14 22H-22V14" strokeWidth="1.5" />}
-          </svg>
-          <div
-            ref={readoutRef}
-            className="absolute left-[30px] top-[30px] whitespace-pre text-[10px] tracking-[0.18em] text-champagne/70 font-medium tabular-nums"
-          />
-          {locked && (
-            <div className="absolute left-[30px] top-[46px] whitespace-nowrap text-[10px] font-semibold tracking-[0.28em] uppercase text-champagne">
-              Target locked
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function EgyptMap({ active, onSelect, onHover }) {
-  return (
-    <svg viewBox="0 0 660 600" className="w-full h-auto" role="img" aria-label="Map of Egypt showing G Developments destinations">
-      <defs>
-        <linearGradient id="land" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#1a1a1a" />
-          <stop offset="100%" stopColor="#0d0d0d" />
-        </linearGradient>
-        <pattern id="grid" width="29" height="29" patternUnits="userSpaceOnUse">
-          <path d="M29 0H0V29" fill="none" stroke="rgba(255,255,255,0.035)" strokeWidth="1" />
-        </pattern>
-      </defs>
-
-      <rect width="660" height="600" fill="url(#grid)" />
-
-      <text x="150" y="26" className="fill-white/25 text-[11px] uppercase" style={{ letterSpacing: '0.4em' }}>Mediterranean Sea</text>
-      <text x="545" y="330" className="fill-white/25 text-[11px] uppercase" style={{ letterSpacing: '0.4em' }} transform="rotate(58 545 330)">Red Sea</text>
-
-      <path d={EGYPT_OUTLINE} fill="url(#land)" stroke="rgba(245,244,240,0.35)" strokeWidth="1" strokeLinejoin="round" />
-      <g fill="none" stroke="rgba(245,244,240,0.22)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
-        <path d={NILE} />
-        <path d={NILE_ROSETTA} />
-        <path d={NILE_DAMIETTA} />
-      </g>
-
-      {DESTINATIONS.map((d) => {
-        const [x, y] = project(d.coords);
-        const l = LABEL_POSITION[d.label];
-        const isActive = active === d.id;
-        const select = () => onSelect(d.id);
-        return (
-          <g
-            key={d.id}
-            role="button"
-            tabIndex={0}
-            aria-label={`Show projects in ${d.name}`}
-            aria-pressed={isActive}
-            onClick={select}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                select();
-              }
-            }}
-            onPointerEnter={() => onHover(d.id)}
-            onPointerLeave={() => onHover(null)}
-            className="cursor-pointer outline-none group"
-          >
-            <circle cx={x} cy={y} r="18" fill="transparent" />
-            <circle cx={x} cy={y} r="6" className="map-ping fill-champagne/40" />
-            <circle
-              cx={x}
-              cy={y}
-              r={isActive ? 6 : 4.5}
-              className={`transition-all duration-300 ${isActive ? 'fill-champagne' : 'fill-champagne/70 group-hover:fill-champagne'}`}
-              stroke="#000"
-              strokeWidth="1.5"
-            />
-            {isActive && <circle cx={x} cy={y} r="11" fill="none" stroke="rgba(245,244,240,0.6)" strokeWidth="1" />}
-            <text
-              x={x + l.dx}
-              y={y + l.dy}
-              textAnchor={l.anchor}
-              className={`text-[11px] uppercase font-semibold transition-colors ${isActive ? 'fill-champagne' : 'fill-white/55 group-hover:fill-white/85'}`}
-              style={{ letterSpacing: '0.18em' }}
-            >
-              {d.name}
-            </text>
-          </g>
-        );
-      })}
-    </svg>
-  );
-}
-
-function DestinationPanel({ id }) {
+function DestinationPanel({ id, focus, onLocate }) {
   const dest = DESTINATIONS.find((d) => d.id === id);
   const projects = PROJECTS.filter((p) => p.destination === id);
   return (
@@ -254,19 +66,33 @@ function DestinationPanel({ id }) {
       </div>
       <div className="flex flex-col gap-4">
         {projects.map((p) => {
+          const located = focus === p.key;
           return (
-            <Link
-              key={p.key}
-              to={projectPath(p.key)}
-              className="group flex items-center gap-5 p-3 pr-5 border border-glass hover:border-glass-strong bg-white/[0.02] transition-colors"
-            >
-              <div className="w-24 h-20 md:w-28 md:h-24 flex-none bg-cover bg-center" style={{ backgroundImage: `url('${p.image}')` }} />
-              <div className="flex-1 min-w-0">
-                <div className="text-base md:text-lg font-light uppercase tracking-[0.06em] text-champagne truncate">{p.name}</div>
-                <div className="text-[11px] tracking-[0.2em] uppercase text-muted mt-1.5">{p.category}</div>
-              </div>
-              <span className="text-champagne/60 group-hover:text-champagne group-hover:translate-x-1 transition-all">&rarr;</span>
-            </Link>
+            <div key={p.key} className="flex flex-col">
+              <Link
+                to={projectPath(p.key)}
+                className="group flex items-center gap-5 p-3 pr-5 border border-glass hover:border-glass-strong bg-white/[0.02] transition-colors"
+              >
+                <div className="w-24 h-20 md:w-28 md:h-24 flex-none bg-cover bg-center" style={{ backgroundImage: `url('${p.image}')` }} />
+                <div className="flex-1 min-w-0">
+                  <div className="text-base md:text-lg font-light uppercase tracking-[0.06em] text-champagne truncate">{p.name}</div>
+                  <div className="text-[11px] tracking-[0.2em] uppercase text-muted mt-1.5">{p.category}</div>
+                </div>
+                <span className="text-champagne/60 group-hover:text-champagne group-hover:translate-x-1 transition-all">&rarr;</span>
+              </Link>
+              {PROJECT_GEO[p.key] && (
+                <button
+                  type="button"
+                  onClick={() => onLocate(p.key)}
+                  aria-pressed={located}
+                  className={`self-start border border-t-0 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.2em] transition-colors ${
+                    located ? 'border-champagne/60 text-champagne' : 'border-glass text-muted hover:border-glass-strong hover:text-champagne'
+                  }`}
+                >
+                  {located ? 'Showing on map' : 'Locate on map'}
+                </button>
+              )}
+            </div>
           );
         })}
       </div>
@@ -315,7 +141,7 @@ function AboutSection() {
           </div>
 
           <Link
-            to="/vision"
+            to="/about-us/vision-mission"
             className="reveal [transition-delay:480ms] mt-12 inline-flex items-center gap-3 text-xs font-semibold tracking-[0.14em] uppercase border-b border-glass-strong pb-2.5 hover:text-champagne transition-colors"
           >
             Our Vision <span aria-hidden="true">&rarr;</span>
@@ -529,7 +355,33 @@ function ProjectCard({ project, index }) {
 
 export default function Home() {
   const [pin, setPin] = useState('north-coast');
-  const [hoveredPin, setHoveredPin] = useState(null);
+  // destination the map is zoomed into (null = whole country)
+  const [zoomed, setZoomed] = useState(null);
+  // project whose master plan is shown on the map (null = the destination overview)
+  const [focus, setFocus] = useState(null);
+
+  // a destination pin zooms in on its projects; clicking it again zooms back out to Egypt
+  const selectPin = (id) => {
+    setFocus(null);
+    if (id === zoomed) {
+      setZoomed(null);
+      return;
+    }
+    setPin(id);
+    setZoomed(id);
+  };
+  // a project pin zooms onto its master plan; clicking it again zooms back out to the destination
+  const selectProject = (key) => {
+    if (focus === key) {
+      setFocus(null);
+      return;
+    }
+    const { destination } = PROJECTS.find((p) => p.key === key);
+    setPin(destination);
+    setZoomed(destination);
+    setFocus(key);
+  };
+  const focusProject = focus && PROJECTS.find((p) => p.key === focus);
   const { sectionRef, trackRef, height, progress } = useScrollTrack();
 
   return (
@@ -560,7 +412,7 @@ export default function Home() {
 
         <div className="relative flex flex-col md:flex-row md:items-center md:justify-between gap-8 px-5 pt-12 pb-10 md:px-16 md:pt-[72px] md:pb-14">
           <Link
-            to="/vision"
+            to="/about-us/vision-mission"
             className="inline-flex items-center gap-3 text-xs font-semibold tracking-[0.14em] uppercase border-b border-glass-strong pb-2.5 w-fit hover:text-champagne transition-colors"
           >
             Discover Our Vision <span aria-hidden="true">&rarr;</span>
@@ -593,7 +445,7 @@ export default function Home() {
               </h2>
             </div>
             <Link
-              to="/communities"
+              to="/community"
               className="hidden md:inline-block text-xs font-semibold tracking-[0.12em] uppercase border-b border-glass-strong pb-[5px] whitespace-nowrap"
             >
               View All Communities &rarr;
@@ -627,10 +479,31 @@ export default function Home() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-[1.35fr_1fr] gap-8 lg:gap-12 items-start">
-          <MapScope locked={hoveredPin}>
-            <EgyptMap active={pin} onSelect={setPin} onHover={setHoveredPin} />
-          </MapScope>
-          <DestinationPanel id={pin} />
+          <div className="relative h-[460px] md:h-[640px] overflow-hidden rounded-[2px] border border-glass bg-[#050505]">
+            <Suspense fallback={<div className="grid h-full place-items-center text-[11px] uppercase tracking-[0.3em] text-muted">Loading map</div>}>
+              <ProjectMap zoomed={zoomed} focus={focus} onSelectDestination={selectPin} onSelectProject={selectProject} />
+            </Suspense>
+            {zoomed && (
+              <div className="absolute left-4 top-4 z-20 flex flex-col items-start gap-2 md:left-6 md:top-6">
+                <button
+                  type="button"
+                  onClick={() => (focus ? setFocus(null) : setZoomed(null))}
+                  className="inline-flex items-center gap-3 border border-glass-strong bg-black/70 px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-champagne backdrop-blur transition-colors hover:border-champagne/60"
+                >
+                  <span aria-hidden="true">&larr;</span> {focus ? DESTINATIONS.find((d) => d.id === zoomed).name : 'All of Egypt'}
+                </button>
+                {focusProject && (
+                  <Link
+                    to={focusProject.plan ? `${projectPath(focusProject.key)}#masterplan` : projectPath(focusProject.key)}
+                    className="inline-flex items-center gap-3 border border-champagne/50 bg-black/70 px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-champagne backdrop-blur transition-colors hover:border-champagne"
+                  >
+                    {focusProject.plan ? 'Explore master plan' : 'View project'} <span aria-hidden="true">&rarr;</span>
+                  </Link>
+                )}
+              </div>
+            )}
+          </div>
+          <DestinationPanel id={pin} focus={focus} onLocate={selectProject} />
         </div>
       </section>
 

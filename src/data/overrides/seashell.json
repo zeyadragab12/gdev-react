@@ -1,0 +1,992 @@
+{
+  "plan": {
+    "phases": {
+      "gateway": null,
+      "northern-villas": null,
+      "lagoon-north-west": null,
+      "lagoon-north-east": null,
+      "central-villas": null,
+      "lagoon-south-west": null,
+      "lagoon-south-east": null,
+      "southern-villas": null,
+      "beachfront": null,
+      "phase-1": {
+        "number": "01",
+        "title": "cabins",
+        "status": "Phase 01",
+        "body": "cabins",
+        "highlights": [],
+        "delivery": "Delivered",
+        "startingPrice": "EGP 8.5M",
+        "units": [
+          {
+            "name": "cabins",
+            "beds": "1",
+            "area": "75m"
+          }
+        ],
+        "polygon": [
+          [
+            273,
+            822
+          ],
+          [
+            341,
+            820
+          ],
+          [
+            380,
+            820
+          ],
+          [
+            432,
+            816
+          ],
+          [
+            496,
+            815
+          ],
+          [
+            558,
+            815
+          ],
+          [
+            607,
+            816
+          ],
+          [
+            619,
+            814
+          ],
+          [
+            619,
+            840
+          ],
+          [
+            616,
+            850
+          ],
+          [
+            627,
+            854
+          ],
+          [
+            630,
+            876
+          ],
+          [
+            631,
+            912
+          ],
+          [
+            631,
+            931
+          ],
+          [
+            605,
+            938
+          ],
+          [
+            555,
+            935
+          ],
+          [
+            536,
+            930
+          ],
+          [
+            511,
+            937
+          ],
+          [
+            502,
+            942
+          ],
+          [
+            479,
+            940
+          ],
+          [
+            464,
+            931
+          ],
+          [
+            438,
+            931
+          ],
+          [
+            425,
+            934
+          ],
+          [
+            402,
+            929
+          ],
+          [
+            374,
+            937
+          ],
+          [
+            357,
+            940
+          ],
+          [
+            338,
+            939
+          ],
+          [
+            321,
+            939
+          ],
+          [
+            309,
+            943
+          ],
+          [
+            292,
+            948
+          ],
+          [
+            276,
+            948
+          ],
+          [
+            269,
+            937
+          ],
+          [
+            266,
+            895
+          ],
+          [
+            260,
+            858
+          ],
+          [
+            260,
+            837
+          ],
+          [
+            262,
+            825
+          ],
+          [
+            264,
+            820
+          ]
+        ],
+        "pin": {
+          "x": 446,
+          "y": 881
+        }
+      },
+      "phase-2": {
+        "number": "02",
+        "title": "Phase 02",
+        "status": "Phase 02",
+        "body": "",
+        "highlights": [],
+        "delivery": "",
+        "startingPrice": "",
+        "units": [],
+        "polygon": [
+          [
+            357,
+            395
+          ],
+          [
+            357,
+            371
+          ],
+          [
+            357,
+            354
+          ],
+          [
+            356,
+            331
+          ],
+          [
+            358,
+            311
+          ],
+          [
+            357,
+            281
+          ],
+          [
+            359,
+            271
+          ],
+          [
+            374,
+            267
+          ],
+          [
+            420,
+            267
+          ],
+          [
+            435,
+            276
+          ],
+          [
+            458,
+            291
+          ],
+          [
+            468,
+            302
+          ],
+          [
+            481,
+            303
+          ],
+          [
+            497,
+            303
+          ],
+          [
+            518,
+            306
+          ],
+          [
+            549,
+            312
+          ],
+          [
+            591,
+            321
+          ],
+          [
+            602,
+            324
+          ],
+          [
+            606,
+            337
+          ],
+          [
+            608,
+            351
+          ],
+          [
+            607,
+            405
+          ],
+          [
+            608,
+            433
+          ],
+          [
+            610,
+            449
+          ],
+          [
+            607,
+            455
+          ],
+          [
+            565,
+            450
+          ],
+          [
+            527,
+            448
+          ],
+          [
+            503,
+            447
+          ],
+          [
+            483,
+            446
+          ],
+          [
+            460,
+            436
+          ],
+          [
+            441,
+            425
+          ],
+          [
+            375,
+            401
+          ],
+          [
+            364,
+            399
+          ]
+        ],
+        "pin": {
+          "x": 483,
+          "y": 361
+        }
+      },
+      "phase-3": {
+        "number": "03",
+        "title": "Phase 03",
+        "status": "Phase 03",
+        "body": "",
+        "highlights": [],
+        "delivery": "",
+        "startingPrice": "",
+        "units": [],
+        "polygon": [
+          [
+            347,
+            392
+          ],
+          [
+            359,
+            149
+          ],
+          [
+            358,
+            129
+          ],
+          [
+            339,
+            121
+          ],
+          [
+            323,
+            116
+          ],
+          [
+            307,
+            108
+          ],
+          [
+            201,
+            58
+          ],
+          [
+            185,
+            63
+          ],
+          [
+            180,
+            71
+          ],
+          [
+            175,
+            82
+          ],
+          [
+            169,
+            94
+          ],
+          [
+            164,
+            111
+          ],
+          [
+            158,
+            125
+          ],
+          [
+            152,
+            138
+          ],
+          [
+            142,
+            165
+          ],
+          [
+            138,
+            184
+          ],
+          [
+            75,
+            395
+          ],
+          [
+            80,
+            416
+          ],
+          [
+            87,
+            422
+          ],
+          [
+            96,
+            416
+          ],
+          [
+            107,
+            411
+          ],
+          [
+            127,
+            402
+          ],
+          [
+            143,
+            394
+          ],
+          [
+            160,
+            389
+          ],
+          [
+            210,
+            384
+          ],
+          [
+            238,
+            390
+          ],
+          [
+            283,
+            392
+          ],
+          [
+            308,
+            391
+          ],
+          [
+            329,
+            392
+          ],
+          [
+            337,
+            394
+          ]
+        ],
+        "pin": {
+          "x": 217,
+          "y": 240
+        }
+      },
+      "phase-4": {
+        "number": "04",
+        "title": "Phase 04",
+        "status": "Phase 04",
+        "body": "",
+        "highlights": [],
+        "delivery": "",
+        "startingPrice": "",
+        "units": [],
+        "polygon": [
+          [
+            113,
+            421
+          ],
+          [
+            118,
+            409
+          ],
+          [
+            129,
+            404
+          ],
+          [
+            144,
+            400
+          ],
+          [
+            162,
+            396
+          ],
+          [
+            176,
+            393
+          ],
+          [
+            193,
+            391
+          ],
+          [
+            208,
+            393
+          ],
+          [
+            222,
+            394
+          ],
+          [
+            258,
+            400
+          ],
+          [
+            267,
+            400
+          ],
+          [
+            286,
+            398
+          ],
+          [
+            301,
+            397
+          ],
+          [
+            324,
+            396
+          ],
+          [
+            343,
+            400
+          ],
+          [
+            346,
+            409
+          ],
+          [
+            347,
+            422
+          ],
+          [
+            347,
+            438
+          ],
+          [
+            345,
+            452
+          ],
+          [
+            345,
+            465
+          ],
+          [
+            342,
+            527
+          ],
+          [
+            339,
+            595
+          ],
+          [
+            337,
+            620
+          ],
+          [
+            339,
+            632
+          ],
+          [
+            332,
+            711
+          ],
+          [
+            332,
+            723
+          ],
+          [
+            332,
+            760
+          ],
+          [
+            326,
+            768
+          ],
+          [
+            308,
+            772
+          ],
+          [
+            282,
+            773
+          ],
+          [
+            255,
+            772
+          ],
+          [
+            240,
+            768
+          ],
+          [
+            219,
+            764
+          ],
+          [
+            202,
+            764
+          ],
+          [
+            187,
+            766
+          ],
+          [
+            172,
+            765
+          ],
+          [
+            164,
+            761
+          ],
+          [
+            150,
+            679
+          ],
+          [
+            134,
+            580
+          ],
+          [
+            125,
+            527
+          ],
+          [
+            120,
+            488
+          ],
+          [
+            113,
+            458
+          ],
+          [
+            106,
+            440
+          ],
+          [
+            107,
+            430
+          ]
+        ],
+        "pin": {
+          "x": 227,
+          "y": 582
+        }
+      },
+      "phase-5": {
+        "number": "05",
+        "title": "Phase 05",
+        "status": "Phase 05",
+        "body": "",
+        "highlights": [],
+        "delivery": "",
+        "startingPrice": "",
+        "units": [],
+        "polygon": [
+          [
+            355,
+            410
+          ],
+          [
+            363,
+            404
+          ],
+          [
+            369,
+            404
+          ],
+          [
+            389,
+            409
+          ],
+          [
+            417,
+            419
+          ],
+          [
+            443,
+            432
+          ],
+          [
+            453,
+            437
+          ],
+          [
+            471,
+            444
+          ],
+          [
+            481,
+            449
+          ],
+          [
+            496,
+            451
+          ],
+          [
+            531,
+            454
+          ],
+          [
+            565,
+            455
+          ],
+          [
+            595,
+            459
+          ],
+          [
+            605,
+            470
+          ],
+          [
+            606,
+            498
+          ],
+          [
+            609,
+            582
+          ],
+          [
+            613,
+            660
+          ],
+          [
+            615,
+            732
+          ],
+          [
+            620,
+            801
+          ],
+          [
+            615,
+            809
+          ],
+          [
+            342,
+            814
+          ],
+          [
+            338,
+            790
+          ],
+          [
+            340,
+            708
+          ],
+          [
+            344,
+            642
+          ],
+          [
+            343,
+            612
+          ],
+          [
+            351,
+            442
+          ],
+          [
+            353,
+            418
+          ]
+        ],
+        "pin": {
+          "x": 479,
+          "y": 609
+        }
+      },
+      "phase-6": {
+        "number": "06",
+        "title": "Phase 06",
+        "status": "Phase 06",
+        "body": "",
+        "highlights": [],
+        "delivery": "",
+        "startingPrice": "",
+        "units": [],
+        "polygon": [
+          [
+            161,
+            769
+          ],
+          [
+            195,
+            766
+          ],
+          [
+            229,
+            767
+          ],
+          [
+            240,
+            774
+          ],
+          [
+            257,
+            779
+          ],
+          [
+            273,
+            779
+          ],
+          [
+            325,
+            778
+          ],
+          [
+            334,
+            789
+          ],
+          [
+            334,
+            810
+          ],
+          [
+            335,
+            820
+          ],
+          [
+            314,
+            822
+          ],
+          [
+            258,
+            823
+          ],
+          [
+            261,
+            895
+          ],
+          [
+            267,
+            918
+          ],
+          [
+            271,
+            945
+          ],
+          [
+            276,
+            971
+          ],
+          [
+            255,
+            976
+          ],
+          [
+            230,
+            971
+          ],
+          [
+            187,
+            949
+          ],
+          [
+            168,
+            838
+          ],
+          [
+            159,
+            780
+          ]
+        ],
+        "pin": {
+          "x": 247,
+          "y": 870
+        }
+      }
+    },
+    "order": [
+      "phase-1",
+      "phase-2",
+      "phase-3",
+      "phase-4",
+      "phase-5",
+      "phase-6"
+    ],
+    "caption": "Seashell · master plan",
+    "note": "Indicative layout. All materials, dimensions and drawings are approximate and subject to change without notice."
+  },
+  "name": "Seashell",
+  "location": "North Coast",
+  "category": "Chalets & Villas",
+  "tagline": "The original coastal retreat by G Developments.",
+  "overview": [
+    "A coastal resort community set along the North Coast, where chalets and villas sit within landscaped terrain framed by the Mediterranean.",
+    "Seashell was conceived as a full seasonal retreat rather than a single building type — beachfront promenades, shaded courtyards and a central clubhouse anchor a layout designed to slow visitors down the moment they arrive."
+  ],
+  "lifestyle": [
+    {
+      "title": "Beachfront promenades",
+      "body": "A continuous promenade links every neighbourhood to the sea and the beach club.",
+      "image": "/images/seashell-villa-day.webp"
+    },
+    {
+      "title": "Shaded courtyards",
+      "body": "Courtyards and pergolas create cool, sheltered gathering places through the summer.",
+      "image": "/images/hero-terrace.webp"
+    },
+    {
+      "title": "Seaside evenings",
+      "body": "The clubhouse and terraces come alive at dusk with dining and gentle lighting.",
+      "image": "/images/seashell-villa-night.webp"
+    }
+  ],
+  "amenities": [
+    {
+      "icon": "beach",
+      "label": "Private Beach"
+    },
+    {
+      "icon": "lagoon",
+      "label": "Crystal Lagoons"
+    },
+    {
+      "icon": "clubhouse",
+      "label": "Beach Clubhouse"
+    },
+    {
+      "icon": "pool",
+      "label": "Swimming Pools"
+    },
+    {
+      "icon": "dining",
+      "label": "Beachfront Dining"
+    },
+    {
+      "icon": "spa",
+      "label": "Spa & Wellness"
+    },
+    {
+      "icon": "kids",
+      "label": "Kids' Club"
+    },
+    {
+      "icon": "security",
+      "label": "24/7 Security"
+    }
+  ],
+  "units": [
+    {
+      "type": "Chalets",
+      "image": "/images/seashell-villa-day.webp",
+      "body": "Light-filled chalets arranged around lagoons and gardens, designed for easy seasonal living.",
+      "highlights": [
+        "Lagoon or garden views",
+        "Private terraces",
+        "Open-plan living"
+      ]
+    },
+    {
+      "type": "Twin Houses",
+      "image": "/images/seashell-villa-night.webp",
+      "body": "Paired residences offering the privacy of a villa with a shared architectural rhythm.",
+      "highlights": [
+        "Private garden",
+        "Roof terrace",
+        "Dedicated parking"
+      ]
+    },
+    {
+      "type": "Standalone Villas",
+      "image": "/images/hero-terrace.webp",
+      "body": "Generous standalone villas set on the most private plots of the masterplan.",
+      "highlights": [
+        "Private pool option",
+        "Panoramic views",
+        "Staff quarters"
+      ]
+    },
+    {
+      "type": "Penthouses",
+      "image": "/images/interior.jpg",
+      "body": "Top-floor residences with expansive terraces looking out toward the sea.",
+      "highlights": [
+        "Sea-facing terraces",
+        "Double-height living",
+        "Private roof"
+      ]
+    }
+  ]
+}

@@ -2,32 +2,84 @@ import { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import ProjectSelect from './ProjectSelect.jsx';
 
-const DELAY_AFTER_INTRO = 2000;
+const DWELL_MS = 30000;
+const SCROLL_RATIO = 0.6;
+const STORAGE_KEY = 'gd-lead-popup';
+const SNOOZE_MS = { submitted: 30 * 864e5 };
+
+function isSnoozed() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    return !!saved && Date.now() - saved.at < SNOOZE_MS[saved.state];
+  } catch {
+    return false;
+  }
+}
+
+function remember(state) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ state, at: Date.now() }));
+  } catch {
+    // storage unavailable (private mode etc.) - the prompt just won't be remembered
+  }
+}
+
 const fieldClass =
   'w-full bg-transparent border-0 border-b border-glass-strong text-white font-light text-[15px] py-3 outline-none placeholder:text-white/30 focus:border-champagne transition-colors';
 const labelClass = 'block text-[10px] font-semibold tracking-[0.2em] uppercase text-muted mb-1.5';
 
-// Lead-capture modal shown on every page load, 2s after the intro splash finishes.
+// Lead capture, shown only once the visitor is engaged (scrolled ~60%, 30s on site, or
+// moving to leave on desktop). It appears as a non-blocking corner card; clicking it opens
+// the full modal. The card stays on screen and shakes every 4s to draw attention; it is only
+// hidden for 30 days once the visitor has submitted the form (remembered in localStorage).
 export default function LeadPopup({ ready }) {
   const { pathname } = useLocation();
+  const [prompt, setPrompt] = useState(false);
   const [open, setOpen] = useState(false);
   const [closing, setClosing] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const firstFieldRef = useRef(null);
+  const shown = useRef(false);
 
   useEffect(() => {
-    if (!ready || pathname === '/contact') return;
-    const timer = setTimeout(() => setOpen(true), DELAY_AFTER_INTRO);
-    return () => clearTimeout(timer);
-    // only the first page the visitor lands on should trigger it
+    if (!ready || shown.current || pathname === '/contact' || isSnoozed()) return;
+    const show = () => {
+      if (shown.current) return;
+      shown.current = true;
+      cleanup();
+      setPrompt(true);
+    };
+    const onScroll = () => {
+      const { scrollHeight, clientHeight } = document.documentElement;
+      if (scrollHeight <= clientHeight * 1.3) return;
+      if ((window.scrollY + clientHeight) / scrollHeight >= SCROLL_RATIO) show();
+    };
+    const onLeave = (e) => e.clientY <= 0 && show();
+    const timer = setTimeout(show, DWELL_MS);
+    const finePointer = window.matchMedia('(pointer: fine)').matches;
+    function cleanup() {
+      clearTimeout(timer);
+      window.removeEventListener('scroll', onScroll);
+      document.removeEventListener('mouseleave', onLeave);
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    if (finePointer) document.addEventListener('mouseleave', onLeave);
+    return cleanup;
+    // only the first page the visitor lands on arms the triggers
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready]);
+
+  const openModal = () => {
+    setPrompt(false);
+    setOpen(true);
+  };
 
   const close = () => {
     setClosing(true);
     setTimeout(() => {
       setOpen(false);
       setClosing(false);
+      setPrompt(!submitted);
     }, 450);
   };
 
@@ -49,9 +101,31 @@ export default function LeadPopup({ ready }) {
     e.preventDefault();
     // TODO: send `Object.fromEntries(new FormData(e.currentTarget))` to the CRM / email endpoint.
     setSubmitted(true);
+    remember('submitted');
   }
 
-  if (!open) return null;
+  if (!open) {
+    if (!prompt) return null;
+    return (
+      <div className="fixed z-[80] bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:bottom-6 sm:w-[340px] animate-fade-up">
+        <div className="lead-nudge relative bg-obsidian border border-glass-strong shadow-[0_30px_80px_-20px_rgba(0,0,0,0.9)]">
+          <button
+            type="button"
+            onClick={openModal}
+            className="block w-full text-left p-5 group"
+          >
+            <span className="block text-[10px] font-semibold tracking-[0.26em] uppercase text-muted mb-2">Private Consultation</span>
+            <span className="block text-[17px] font-extralight uppercase tracking-[0.04em] leading-[1.25]">
+              Find your <span className="text-champagne/60">next address</span>
+            </span>
+            <span className="mt-3 inline-block text-[11px] font-semibold tracking-[0.2em] uppercase text-champagne border-b border-champagne/40 pb-1 group-hover:border-champagne transition-colors">
+              Request a call back &rarr;
+            </span>
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div

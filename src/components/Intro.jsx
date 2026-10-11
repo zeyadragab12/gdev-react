@@ -8,9 +8,10 @@ const LETTER_STAGGER = 45;
 const LETTER_DURATION = 800;
 const HOLD = 1600;
 const EXIT = 900;
-const HEARTBEATS = 2; // "lub-dub" beats played during the hold
+const LAYER_STAGGER = 120; // on entry: white leads, then silver, then black covers
+const COVERED = RISE + LAYER_STAGGER * 2; // black fully in place
 
-const REVEAL_DONE = RISE + LETTER_STAGGER * (TEXT.length - 1) + LETTER_DURATION;
+const REVEAL_DONE = COVERED + LETTER_STAGGER * (TEXT.length - 1) + LETTER_DURATION;
 
 export default function Intro({ onDone }) {
   // plays on every page load
@@ -37,30 +38,35 @@ export default function Intro({ onDone }) {
 
   if (phase === 'done') return null;
 
+  const exitClass = phase === 'exit' ? 'intro-curtain--exit' : '';
+  const vars = { '--rise': `${RISE}ms`, '--exit': `${EXIT}ms` };
+
   return (
+    <>
+      {/* entry: white rises first, silver follows, black last; exit: all leave together */}
+      <div
+        aria-hidden="true"
+        className={`intro-curtain fixed inset-0 z-[98] bg-white ${exitClass}`}
+        style={{ ...vars, '--delay': '0ms' }}
+      />
+      <div
+        aria-hidden="true"
+        className={`intro-curtain fixed inset-0 z-[99] bg-[#c0c0c4] ${exitClass}`}
+        style={{ ...vars, '--delay': `${LAYER_STAGGER}ms` }}
+      />
     <div
       aria-hidden="true"
-      className={`intro-curtain fixed inset-0 z-[100] flex items-center justify-center bg-black ${
-        phase === 'exit' ? 'intro-curtain--exit' : ''
-      }`}
-      style={{ '--rise': `${RISE}ms`, '--exit': `${EXIT}ms` }}
+      className={`intro-curtain fixed inset-0 z-[100] flex items-center justify-center bg-black ${exitClass}`}
+      style={{ ...vars, '--delay': `${LAYER_STAGGER * 2}ms` }}
     >
       <div className={`intro-content text-center ${phase === 'exit' ? 'intro-content--exit' : ''}`}>
-        <div
-          className="intro-heartbeat"
-          style={{
-            animationDelay: `${REVEAL_DONE}ms`,
-            animationDuration: `${HOLD / HEARTBEATS}ms`,
-            animationIterationCount: HEARTBEATS,
-          }}
-        >
         <h1 className="flex justify-center overflow-hidden text-4xl font-bold tracking-[0.12em] text-champagne sm:text-6xl md:text-7xl">
           {TEXT.split('').map((char, i) => (
             <span
               key={i}
               className="intro-letter inline-block"
               style={{
-                animationDelay: `${RISE + i * LETTER_STAGGER}ms`,
+                animationDelay: `${COVERED + i * LETTER_STAGGER}ms`,
                 animationDuration: `${LETTER_DURATION}ms`,
               }}
             >
@@ -68,12 +74,12 @@ export default function Intro({ onDone }) {
             </span>
           ))}
         </h1>
-        </div>
         <div
           className="intro-line mx-auto mt-6 h-px w-40 bg-champagne/60"
-          style={{ animationDelay: `${RISE + 300}ms` }}
+          style={{ animationDelay: `${COVERED + 300}ms` }}
         />
       </div>
     </div>
+    </>
   );
 }

@@ -8,6 +8,25 @@ html {
 
 body {
   -webkit-font-smoothing: antialiased;
+  font-weight: 600;
+}
+
+/* weights: headings bold, body text semibold (overrides the thin/light utilities used in markup) */
+.font-thin,
+.font-extralight,
+.font-light,
+.font-normal {
+  font-weight: 600 !important;
+}
+h1,
+h2,
+h3,
+h4,
+h1.font-thin, h2.font-thin, h3.font-thin,
+h1.font-extralight, h2.font-extralight, h3.font-extralight,
+h1.font-light, h2.font-light, h3.font-light,
+h1.font-normal, h2.font-normal, h3.font-normal {
+  font-weight: 700 !important;
 }
 
 /* hide horizontal-scroll scrollbars on the project showcase */
@@ -37,7 +56,7 @@ body {
 /* ---------- Intro splash ---------- */
 .intro-curtain {
   transform: translateY(100%);
-  animation: intro-rise var(--rise) cubic-bezier(0.76, 0, 0.24, 1) forwards;
+  animation: intro-rise var(--rise) cubic-bezier(0.76, 0, 0.24, 1) var(--delay, 0ms) forwards;
 }
 .intro-curtain--exit {
   transform: translateY(0);
@@ -76,21 +95,6 @@ body {
 }
 @keyframes intro-line {
   to { transform: scaleX(1); }
-}
-
-/* "lub-dub" pulse on the wordmark during the 1s hold */
-.intro-heartbeat {
-  animation-name: intro-heartbeat;
-  animation-timing-function: ease-in-out;
-  animation-fill-mode: both;
-}
-@keyframes intro-heartbeat {
-  0%   { transform: scale(1);    text-shadow: 0 0 0 rgba(245, 244, 240, 0); }
-  14%  { transform: scale(1.12); text-shadow: 0 0 24px rgba(245, 244, 240, 0.45); }
-  28%  { transform: scale(1);    text-shadow: 0 0 0 rgba(245, 244, 240, 0); }
-  42%  { transform: scale(1.08); text-shadow: 0 0 18px rgba(245, 244, 240, 0.35); }
-  70%  { transform: scale(1);    text-shadow: 0 0 0 rgba(245, 244, 240, 0); }
-  100% { transform: scale(1);    text-shadow: 0 0 0 rgba(245, 244, 240, 0); }
 }
 
 /* expanding ring behind each destination pin on the Egypt map */
@@ -154,6 +158,25 @@ body {
   }
 }
 
+/* lead card: shake + glow ring once every 4s to invite a click */
+.lead-nudge {
+  animation: lead-nudge 4s ease-in-out 1.2s infinite;
+}
+@keyframes lead-nudge {
+  0%, 18%, 100% { transform: none; box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.9), 0 0 0 0 rgba(245, 244, 240, 0); }
+  2%  { transform: translateX(-7px) rotate(-1deg); box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.9), 0 0 0 0 rgba(245, 244, 240, 0.5); }
+  4%  { transform: translateX(7px) rotate(1deg); }
+  6%  { transform: translateX(-6px) rotate(-0.8deg); }
+  8%  { transform: translateX(6px) rotate(0.8deg); }
+  10% { transform: translateX(-3px); }
+  12% { transform: translateX(3px); }
+  14% { transform: none; box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.9), 0 0 0 14px rgba(245, 244, 240, 0); }
+}
+.lead-nudge:hover { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) {
+  .lead-nudge { animation: none; }
+}
+
 /* lead popup entrance */
 .lead-pop {
   animation: lead-pop 800ms cubic-bezier(0.22, 1, 0.36, 1) both;
@@ -191,3 +214,84 @@ body {
   from { opacity: 0; transform: translateX(-10px); }
   to { opacity: 1; transform: none; }
 }
+
+/* ---------- Interactive master plan ---------- */
+.phase-shape {
+  fill: rgba(245, 244, 240, 0);
+  stroke: rgba(245, 244, 240, 0);
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+  stroke-linejoin: round;
+  cursor: pointer;
+  outline: none;
+  transition: fill 350ms ease, stroke 350ms ease, stroke-width 350ms ease;
+}
+.phase-shape.is-hovered {
+  fill: rgba(245, 244, 240, 0.16);
+  stroke: var(--mp-accent, #f5f4f0);
+  stroke-width: 2;
+}
+.phase-shape.is-selected {
+  stroke: var(--mp-accent, #f5f4f0);
+  stroke-width: 2.5;
+}
+/* everything but the selected phase, one even-odd path with the phase cut out */
+.mp-dim {
+  fill: var(--mp-dim, rgba(6, 6, 6, 0.62));
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 700ms ease;
+}
+.mp-dim.is-on { opacity: 1; }
+.mp-sheet { animation: mp-sheet 560ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+@keyframes mp-sheet { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+.mp-focus:focus-visible { outline: 2px solid #f5f4f0; outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) {
+  .mp-sheet { animation: none; }
+  .phase-shape, .mp-dim { transition: none; }
+}
+
+/* ---------- Master plan style variants ----------
+   Driven by data-mp-* attributes on a wrapper (see /dev/masterplan-styles). Without them
+   the plan looks exactly as before. --mp-accent sets the highlight colour. */
+.mp-plan-pop { opacity: 0; pointer-events: none; transition: opacity 700ms ease; }
+.mp-frame::after { content: ''; position: absolute; inset: 0; pointer-events: none; transition: box-shadow 400ms ease; }
+
+/* plan image treatment */
+[data-mp-image="dark"] .mp-plan-image { filter: grayscale(0.9) brightness(0.62) contrast(1.15) sepia(0.18); }
+[data-mp-image="muted"] .mp-plan-image { filter: saturate(0.55) brightness(0.8) sepia(0.15); }
+[data-mp-image="mono"] .mp-plan-image { filter: grayscale(1) brightness(0.75) contrast(1.2); }
+[data-mp-image="paper"] { --mp-dim: rgba(236, 231, 220, 0.72); }
+[data-mp-image="paper"] .mp-frame { --mp-bg: #ece7dc; }
+[data-mp-image="paper"] .mp-plan-image { filter: sepia(0.25) saturate(0.7) brightness(1.05); }
+[data-mp-image="dark"] .mp-plan-pop.is-on,
+[data-mp-image="muted"] .mp-plan-pop.is-on,
+[data-mp-image="mono"] .mp-plan-pop.is-on,
+[data-mp-image="paper"] .mp-plan-pop.is-on { opacity: 1; }
+
+/* phase shapes */
+[data-mp-phase="tint"] .phase-shape { fill: color-mix(in srgb, var(--mp-accent, #f5f4f0) 14%, transparent); stroke: color-mix(in srgb, var(--mp-accent, #f5f4f0) 55%, transparent); }
+[data-mp-phase="tint"] .phase-shape.is-hovered { fill: color-mix(in srgb, var(--mp-accent, #f5f4f0) 34%, transparent); stroke: var(--mp-accent, #f5f4f0); }
+[data-mp-phase="tint"] .phase-shape.is-selected { fill: transparent; stroke: var(--mp-accent, #f5f4f0); stroke-width: 3; }
+[data-mp-phase="glow"] .phase-shape { fill: color-mix(in srgb, var(--mp-accent, #f5f4f0) 9%, transparent); stroke: color-mix(in srgb, var(--mp-accent, #f5f4f0) 45%, transparent); stroke-dasharray: 6 5; }
+[data-mp-phase="glow"] .phase-shape.is-hovered { fill: color-mix(in srgb, var(--mp-accent, #f5f4f0) 30%, transparent); stroke: var(--mp-accent, #f5f4f0); stroke-dasharray: none; filter: drop-shadow(0 0 10px var(--mp-accent, #f5f4f0)); }
+[data-mp-phase="glow"] .phase-shape.is-selected { fill: transparent; stroke: var(--mp-accent, #f5f4f0); stroke-width: 3; stroke-dasharray: none; filter: drop-shadow(0 0 14px var(--mp-accent, #f5f4f0)); }
+[data-mp-phase="coded"] .phase-shape { --c: hsl(calc(var(--i) * 41 + 15) 62% 62%); fill: color-mix(in srgb, var(--c) 26%, transparent); stroke: color-mix(in srgb, var(--c) 75%, transparent); }
+[data-mp-phase="coded"] .phase-shape.is-hovered { fill: color-mix(in srgb, var(--c) 48%, transparent); stroke: var(--c); }
+[data-mp-phase="coded"] .phase-shape.is-selected { fill: transparent; stroke: var(--c); stroke-width: 3; }
+
+/* pins */
+[data-mp-pin="gold"] .mp-pin-dot { background: var(--mp-accent, #f5f4f0); border-color: transparent; color: #000; box-shadow: 0 0 0 4px color-mix(in srgb, var(--mp-accent, #f5f4f0) 28%, transparent), 0 2px 10px rgba(0, 0, 0, 0.5); }
+[data-mp-pin="gold"] .mp-pin-dot[data-state="hovered"],
+[data-mp-pin="gold"] .mp-pin-dot[data-state="selected"] { background: #fff; box-shadow: 0 0 0 5px color-mix(in srgb, var(--mp-accent, #f5f4f0) 55%, transparent), 0 2px 14px rgba(0, 0, 0, 0.6); }
+[data-mp-pin="ring"] .mp-pin-dot { background: rgba(0, 0, 0, 0.35); backdrop-filter: blur(3px); border: 1.5px solid var(--mp-accent, #f5f4f0); color: var(--mp-accent, #f5f4f0); box-shadow: none; }
+[data-mp-pin="ring"] .mp-pin-dot[data-state="hovered"],
+[data-mp-pin="ring"] .mp-pin-dot[data-state="selected"] { background: var(--mp-accent, #f5f4f0); color: #000; }
+[data-mp-pin="dot"] .mp-pin-dot { background: transparent; border-color: transparent; box-shadow: none; font-size: 0; }
+[data-mp-pin="dot"] .mp-pin-dot::before { content: ''; width: 12px; height: 12px; border-radius: 50%; background: var(--mp-accent, #f5f4f0); box-shadow: 0 0 0 5px color-mix(in srgb, var(--mp-accent, #f5f4f0) 30%, transparent), 0 1px 6px rgba(0, 0, 0, 0.6); transition: transform 300ms ease; }
+[data-mp-pin="dot"] .mp-pin-dot[data-state="hovered"]::before,
+[data-mp-pin="dot"] .mp-pin-dot[data-state="selected"]::before { transform: scale(1.35); background: #fff; }
+
+/* frame */
+[data-mp-frame="framed"] .mp-frame::after { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--mp-accent, #f5f4f0) 45%, transparent), inset 0 0 140px rgba(0, 0, 0, 0.6); }
+[data-mp-frame="framed"][data-mp-image="paper"] .mp-frame::after { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--mp-accent, #f5f4f0) 60%, transparent), inset 0 0 120px rgba(120, 100, 60, 0.25); }

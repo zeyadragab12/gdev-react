@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { DESTINATIONS, PROJECTS, projectPath } from '../data/projects.js';
+import { ABOUT_PAGES, aboutPath, COMMUNITY_PATH, G_GROUP, G_GROUP_PATH, entityPath } from '../data/siteMap.js';
 
 // `pages` = values of the `active` prop (set by each page) that highlight the link.
 const LINKS = [
-  { to: '/#about', label: 'About Us', pages: [] },
-  { to: '/vision', label: 'Our Vision', pages: ['Vision'] },
-  { to: '/communities', label: 'Projects', pages: ['Communities'], mega: true },
+  { to: aboutPath(), label: 'About Us', pages: ['About', 'Vision'], children: ABOUT_PAGES.map((p) => ({ to: aboutPath(p.slug), label: p.label })) },
+  { to: COMMUNITY_PATH, label: 'Communities', pages: ['Communities'], mega: true },
+  { to: G_GROUP_PATH, label: 'G Group', pages: ['GGroup'], children: G_GROUP.entities.map((e) => ({ to: entityPath(e.slug), label: e.name })) },
   { to: '/#map', label: 'Destinations', pages: [] },
   { to: '/#approach', label: 'Our Approach', pages: [] },
   { to: '/contact', label: 'Contact Us', pages: ['Contact'] },
@@ -74,7 +75,7 @@ function ProjectsMenu({ open, onEnter, onClose }) {
             <span className="text-xs font-light text-white/45">
               {PROJECTS.length} communities across {DESTINATIONS.length} destinations in Egypt
             </span>
-            <Link to="/communities" onClick={onClose} className="text-[11px] font-semibold tracking-[0.2em] uppercase text-champagne border-b border-champagne/40 pb-1 hover:border-champagne">
+            <Link to="/community" onClick={onClose} className="text-[11px] font-semibold tracking-[0.2em] uppercase text-champagne border-b border-champagne/40 pb-1 hover:border-champagne">
               View All Projects &rarr;
             </Link>
           </div>
@@ -137,6 +138,28 @@ export default function Nav({ active }) {
                 </svg>
               </Link>
             </div>
+          ) : l.children ? (
+            <div key={l.label} onMouseEnter={() => setMegaOpen(false)} className="relative group">
+              <Link
+                to={l.to}
+                className={`relative text-xs font-medium tracking-[0.14em] uppercase transition-colors after:absolute after:left-0 after:-bottom-2 after:h-px after:bg-champagne after:transition-all after:duration-500 ${
+                  isActive(l) ? 'text-white after:w-full' : 'text-muted group-hover:text-white after:w-0 group-hover:after:w-full'
+                }`}
+              >
+                {l.label}
+              </Link>
+              <ul className="absolute left-0 top-full pt-6 min-w-[260px] invisible opacity-0 -translate-y-2 transition-all duration-300 group-hover:visible group-hover:opacity-100 group-hover:translate-y-0 group-focus-within:visible group-focus-within:opacity-100 group-focus-within:translate-y-0">
+                <div className="bg-[#070707]/95 backdrop-blur-xl border border-glass py-3">
+                  {l.children.map((c) => (
+                    <li key={c.to}>
+                      <Link to={c.to} className="block px-6 py-2.5 text-[12px] font-light uppercase tracking-[0.1em] text-white/75 hover:text-champagne focus:text-champagne outline-none transition-colors">
+                        {c.label}
+                      </Link>
+                    </li>
+                  ))}
+                </div>
+              </ul>
+            </div>
           ) : (
             <Link
               key={l.label}
@@ -198,12 +221,27 @@ export default function Nav({ active }) {
                       </li>
                     ))}
                     <li>
-                      <Link to="/communities" className="block py-3 pl-2 mb-2 text-[11px] font-semibold tracking-[0.2em] uppercase text-champagne">
+                      <Link to="/community" className="block py-3 pl-2 mb-2 text-[11px] font-semibold tracking-[0.2em] uppercase text-champagne">
                         View All Projects &rarr;
                       </Link>
                     </li>
                   </ul>
                 </div>
+              </div>
+            ) : l.children ? (
+              <div key={l.label} className="border-b border-glass">
+                <Link to={l.to} className={`block py-4 text-[13px] font-medium tracking-[0.14em] uppercase ${isActive(l) ? 'text-champagne' : 'text-white/80'}`}>
+                  {l.label}
+                </Link>
+                <ul className="pb-3 pl-2">
+                  {l.children.map((c) => (
+                    <li key={c.to}>
+                      <Link to={c.to} className="block py-2 text-[12px] tracking-[0.1em] uppercase text-white/55">
+                        {c.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
               </div>
             ) : (
               <Link
