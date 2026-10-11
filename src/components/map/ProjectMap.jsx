@@ -81,9 +81,9 @@ const SITE_DATA = points(
   })),
 );
 const PIN_DATA = points(
-  SITES.map((s) => ({
+  SITES.map((s, i) => ({
     type: 'Feature',
-    properties: { key: s.project.key, name: s.project.name, note: s.geo.verified ? '' : '\nIndicative location' },
+    properties: { key: s.project.key, order: i, name: s.project.name, note: s.geo.verified ? '' : '\nIndicative location' },
     geometry: { type: 'Point', coordinates: s.geo.center },
   })),
 );
@@ -155,7 +155,7 @@ export default function ProjectMap({ zoomed, focus, look = HOME_LOOK, onSelectDe
           'text-allow-overlap': false,
           'text-variable-anchor': ['bottom', 'top', 'right', 'left'],
           'text-radial-offset': 0.9,
-          'symbol-sort-key': ['get', 'key'],
+          'symbol-sort-key': ['get', 'order'],
         },
         paint: halo,
       });
