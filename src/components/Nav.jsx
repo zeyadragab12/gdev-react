@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { DESTINATIONS, PROJECTS, projectPath } from '../data/projects.js';
-import { ABOUT_PAGES, aboutPath, COMMUNITY_PATH, G_GROUP, G_GROUP_PATH, entityPath } from '../data/siteMap.js';
+import { ABOUT_PAGES, aboutPath, COMMUNITY_PATH, G_GROUP_PATH } from '../data/siteMap.js';
 
 // `pages` = values of the `active` prop (set by each page) that highlight the link.
 const LINKS = [
   { to: aboutPath(), label: 'About Us', pages: ['About', 'Vision'], children: ABOUT_PAGES.map((p) => ({ to: aboutPath(p.slug), label: p.label })) },
   { to: COMMUNITY_PATH, label: 'Communities', pages: ['Communities'], mega: true },
-  { to: G_GROUP_PATH, label: 'G Group', pages: ['GGroup'], children: G_GROUP.entities.map((e) => ({ to: entityPath(e.slug), label: e.name })) },
+  { to: G_GROUP_PATH, label: 'G Group', pages: ['GGroup'] },
   { to: '/#map', label: 'Destinations', pages: [] },
   { to: '/#approach', label: 'Our Approach', pages: [] },
   { to: '/contact', label: 'Contact Us', pages: ['Contact'] },

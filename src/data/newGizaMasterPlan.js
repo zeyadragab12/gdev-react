@@ -1,4 +1,4 @@
-// Interactive master plan for New Giza. Same format and editing notes as playaMasterPlan.js
+// Interactive master plan for Newgiza. Same format and editing notes as playaMasterPlan.js
 // (polygons are in IMAGE pixels; the image is 789 x 1057). The boundaries are traced by eye
 // from the raster, and the phase names and descriptions are placeholders until the official
 // phasing is supplied.
@@ -8,8 +8,8 @@ const plan = {
   thumb: '/masterplans/thumbs/new_giza.jpg',
   width: 789,
   height: 1057,
-  alt: 'Master plan of New Giza',
-  caption: 'New Giza · master plan',
+  alt: 'Master plan of Newgiza',
+  caption: 'Newgiza · master plan',
   note: 'Indicative layout. All materials, dimensions and drawings are approximate and subject to change without notice.',
   phases: [
     {

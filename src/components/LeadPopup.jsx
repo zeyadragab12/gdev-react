@@ -36,6 +36,7 @@ export default function LeadPopup({ ready }) {
   const { pathname } = useLocation();
   const [prompt, setPrompt] = useState(false);
   const [open, setOpen] = useState(false);
+  const [minimized, setMinimized] = useState(false);
   const [closing, setClosing] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const firstFieldRef = useRef(null);
@@ -78,6 +79,7 @@ export default function LeadPopup({ ready }) {
     setClosing(true);
     setTimeout(() => {
       setOpen(false);
+      setMinimized(false);
       setClosing(false);
       setPrompt(!submitted);
     }, 450);
@@ -106,6 +108,20 @@ export default function LeadPopup({ ready }) {
 
   if (!open) {
     if (!prompt) return null;
+    if (minimized) {
+      return (
+        <button
+          type="button"
+          onClick={() => setMinimized(false)}
+          aria-label="Find your next address - request a call back"
+          className="fixed z-[80] bottom-4 right-4 sm:bottom-6 sm:right-6 w-14 h-14 rounded-full bg-champagne text-black shadow-[0_20px_50px_-10px_rgba(0,0,0,0.8)] flex items-center justify-center animate-fade-up hover:scale-105 transition-transform"
+        >
+          <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+            <path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2z" strokeLinejoin="round" />
+          </svg>
+        </button>
+      );
+    }
     return (
       <div className="fixed z-[80] bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:bottom-6 sm:w-[340px] animate-fade-up">
         <div className="lead-nudge relative bg-obsidian border border-glass-strong shadow-[0_30px_80px_-20px_rgba(0,0,0,0.9)]">
@@ -121,6 +137,14 @@ export default function LeadPopup({ ready }) {
             <span className="mt-3 inline-block text-[11px] font-semibold tracking-[0.2em] uppercase text-champagne border-b border-champagne/40 pb-1 group-hover:border-champagne transition-colors">
               Request a call back &rarr;
             </span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setMinimized(true)}
+            aria-label="Dismiss"
+            className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center text-white/50 hover:text-white transition-colors"
+          >
+            &times;
           </button>
         </div>
       </div>
