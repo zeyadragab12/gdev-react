@@ -58,20 +58,20 @@ export const ABOUT_PAGES = [
 export const aboutPath = (slug) => (slug ? `/about-us/${slug}` : '/about-us');
 export const getAboutPage = (slug) => ABOUT_PAGES.find((p) => p.slug === slug);
 
-// Page bodies. Facts here were confirmed by the client (content master + New Giza profile report).
+// Page bodies. Facts here were confirmed by the client (content master + Newgiza profile report).
 export const HISTORY = {
   milestones: [
-    { year: String(FOUNDED_YEAR), title: 'The beginning', text: 'The company was established as New Giza Development by Mahmoud El-Gamal and Salah Diab, with a focus on residential and commercial development in Egypt. Its first and defining project was New Giza, a landscaped community in 6th of October City.' },
-    { year: '2016', title: 'University of New Giza', text: 'New Giza expanded beyond housing into education with the opening of the University of New Giza.' },
+    { year: String(FOUNDED_YEAR), title: 'The beginning', text: 'The company was established as Newgiza Development by Mahmoud El-Gamal and Salah Diab, with a focus on residential and commercial development in Egypt. Its first and defining project was Newgiza, a landscaped community in 6th of October City.' },
+    { year: '2016', title: 'University of Newgiza', text: 'Newgiza expanded beyond housing into education with the opening of the University of Newgiza.' },
     { year: '2019', title: 'Investing in education', text: 'The company made a major investment to expand the university, reinforcing its belief that a community is more than its homes.' },
-    { year: '2024', title: 'A new name: G Developments', text: 'In August 2024, New Giza Development was renamed G Developments. The new name reflects a company whose communities now reach well beyond a single address, across Cairo, the North Coast, Ras El Hekma and Ain Sokhna.', note: 'Renamed in August 2024' },
-    { year: 'Today', title: 'Communities across Egypt', text: 'G Developments continues to develop New Giza alongside NewKairo, City View, Seashell, Playa and Ain Bay, each planned around landscape, open space and long-term living.' },
+    { year: '2024', title: 'A new name: G Developments', text: 'In August 2024, Newgiza Development was renamed G Developments. The new name reflects a company whose communities now reach well beyond a single address, across Cairo, the North Coast, Ras El Hekma and Ain Sokhna.', note: 'Renamed in August 2024' },
+    { year: 'Today', title: 'Communities across Egypt', text: 'G Developments continues to develop Newgiza alongside NewKairo, City View, Seashell, Playa and Einbay, each planned around landscape, open space and long-term living.' },
   ],
   journey: 'From a first community in 6th of October City, G Developments has grown into a developer with communities in Cairo, on the North Coast, at Ras El Hekma and in Ain Sokhna. Our history is best understood through the milestones that have shaped our business.',
   portfolio: [
-    { title: 'New Giza', text: 'Our flagship master-planned community in 6th of October City: 1,500 acres, 87% of it planned as open space, gardens and lakes, with an 18-hole golf course and a downtown district.' },
-    { title: 'Education', text: 'The University of New Giza, opened in 2016, reflects our interest in building the institutions that communities depend on.' },
-    { title: 'Coastal living', text: 'Seashell, Playa and Ain Bay extend our work to the Mediterranean and Red Sea coasts.' },
+    { title: 'Newgiza', text: 'Our flagship master-planned community in 6th of October City: 1,500 acres, 87% of it planned as open space, gardens and lakes, with an 18-hole golf course and a downtown district.' },
+    { title: 'Education', text: 'The University of Newgiza, opened in 2016, reflects our interest in building the institutions that communities depend on.' },
+    { title: 'Coastal living', text: 'Seashell, Playa and Einbay extend our work to the Mediterranean and Red Sea coasts.' },
     { title: 'Urban residences', text: 'NewKairo and City View bring community-scale planning to Cairo’s established and growing neighbourhoods.' },
   ],
   founders: [{ name: 'Mahmoud El-Gamal', role: 'Co-founder' }, { name: 'Salah Diab', role: 'Co-founder' }],
@@ -118,7 +118,7 @@ export const SUSTAINABILITY = {
     { title: 'People and opportunity', text: 'Our people and partners contribute to the quality of our work.' },
   ],
   certifications: ['ISO 9001', 'LEED', 'OHSAS 18001'],
-  green: 'At New Giza, 87% of the land is planned as open space, gardens and lakes, so greenery is part of every neighbourhood rather than an afterthought.',
+  green: 'At Newgiza, 87% of the land is planned as open space, gardens and lakes, so greenery is part of every neighbourhood rather than an afterthought.',
   commitments: 'We believe responsible business requires clear priorities and honest reporting. As our programmes develop, we will share verified initiatives, progress measures and relevant updates through this page.',
 };
 
@@ -131,8 +131,8 @@ export const G_GROUP = {
   // approved descriptions, services and logos per entity. Cards, nav and /g-group/:entity pages all read this.
   entities: [
     { slug: 'g-developments', name: 'G Developments', area: 'Real estate development', summary: 'The group’s real estate developer, creating master-planned communities across Egypt.', link: { to: COMMUNITY_PATH, label: 'Explore Our Communities' } },
-    { slug: 'g-communities', name: 'G Communities', area: 'Community living', summary: 'Focused on the everyday life of the communities in the G Group.' },
-    { slug: 'g-lifestyle', name: 'G Lifestyle', area: 'Lifestyle', summary: 'Lifestyle experiences and services for residents and visitors.' },
+    { slug: 'g-communities', name: 'G Communities', area: 'Community living', summary: 'Focused on the everyday life of the communities in the G Group.', link: { href: 'https://gcommunities.eg', label: 'gcommunities.eg' } },
+    { slug: 'g-lifestyle', name: 'G Lifestyle', area: 'Lifestyle', summary: 'Lifestyle experiences and services for residents and visitors.', link: { href: 'https://glifestyle.eg', label: 'glifestyle.eg' } },
     { slug: 'g-hotels', name: 'G Hotels', area: 'Hospitality', summary: 'The group’s hospitality business.' },
     { slug: 'g-clubs', name: 'G Clubs', area: 'Clubs and leisure', summary: 'Club and leisure facilities within the group’s communities.' },
     { slug: 'g-utilities', name: 'G Utilities', area: 'Utilities and infrastructure', summary: 'Utilities and infrastructure services that support the group’s communities.' },
@@ -141,5 +141,3 @@ export const G_GROUP = {
   ],
 };
 
-export const getEntity = (slug) => G_GROUP.entities.find((e) => e.slug === slug);
-export const entityPath = (slug) => `${G_GROUP_PATH}/${slug}`;

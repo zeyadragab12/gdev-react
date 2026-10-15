@@ -8,7 +8,6 @@ import ProjectDetail from './pages/ProjectDetail.jsx';
 import AboutUs from './pages/AboutUs.jsx';
 import AboutSection from './pages/AboutSection.jsx';
 import GGroup from './pages/GGroup.jsx';
-import GGroupEntity from './pages/GGroupEntity.jsx';
 import LatestLaunches from './pages/LatestLaunches.jsx';
 import Units from './pages/Units.jsx';
 import NotFound from './pages/NotFound.jsx';
@@ -49,7 +48,7 @@ export default function App() {
         <Route path="/about-us/vision-mission" element={<Vision />} />
         <Route path="/about-us/:section" element={<AboutSection />} />
         <Route path="/g-group" element={<GGroup />} />
-        <Route path="/g-group/:entity" element={<GGroupEntity />} />
+        <Route path="/g-group/*" element={<Navigate to="/g-group" replace />} />
         <Route path="/community" element={<Communities />} />
         <Route path="/community/latest-launches" element={<LatestLaunches />} />
         <Route path="/community/:slug" element={<ProjectDetail />} />

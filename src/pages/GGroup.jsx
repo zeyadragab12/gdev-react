@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom';
 import PageShell, { Block, Prose } from '../components/PageShell.jsx';
-import { G_GROUP, entityPath } from '../data/siteMap.js';
+import { G_GROUP } from '../data/siteMap.js';
+
+const linkClass = 'mt-6 inline-block text-[11px] font-semibold tracking-[0.2em] uppercase text-champagne border-b border-champagne/40 pb-1 hover:border-champagne transition-colors';
 
 export default function GGroup() {
   return (
@@ -21,12 +23,21 @@ export default function GGroup() {
         <Block title="Our companies">
           <ul className="grid grid-cols-1 md:grid-cols-2 gap-px bg-glass">
             {G_GROUP.entities.map((e) => (
-              <li key={e.slug} className="bg-black">
-                <Link to={entityPath(e.slug)} className="group block p-8 md:p-12 h-full transition-colors hover:bg-white/[0.03]">
-                  <div className="text-[11px] tracking-[0.24em] uppercase text-muted mb-5">{e.area}</div>
-                  <div className="text-2xl font-light mb-3 group-hover:text-champagne transition-colors">{e.name}</div>
-                  <p className="text-[15px] leading-[1.75] text-muted font-light max-w-[440px]">{e.summary}</p>
-                </Link>
+              <li key={e.slug} className="bg-black p-8 md:p-12">
+                <div className="text-[11px] tracking-[0.24em] uppercase text-muted mb-5">{e.area}</div>
+                <div className="text-2xl font-light mb-3">{e.name}</div>
+                <p className="text-[15px] leading-[1.75] text-muted font-light max-w-[440px]">{e.summary}</p>
+                {e.link && (
+                  e.link.href ? (
+                    <a href={e.link.href} target="_blank" rel="noopener noreferrer" className={linkClass}>
+                      {e.link.label} &rarr;
+                    </a>
+                  ) : (
+                    <Link to={e.link.to} className={linkClass}>
+                      {e.link.label} &rarr;
+                    </Link>
+                  )
+                )}
               </li>
             ))}
           </ul>
